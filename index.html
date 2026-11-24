@@ -124,7 +124,7 @@ h3.sec{text-align:center;font-size:1.45rem;margin:46px 0 18px;color:var(--ink)}
   </header>
 
   <section class="card" aria-label="الدعوة">
-    <p class="verse">قد يجمع الله الشتيتين بعدما يظنان كل الظن أن لا تلافيا ,,</p>
+    <p class="verse">قد يجمع الله الشتيتين بعدما يظنان كل الظن أن لا تلاقيا ,,</p>
     <p>بقلوب يملؤها الحب ، وبفرحة لا تكتمل إلا بوجودكم</p>
     <p>ندعوكم لمشاركتنا</p><p>اجمل لحظات العمر</p><p>وبداية مشوارنا معاً</p>
     <div class="n latin">Mostafa Eldaw</div><div class="tag">العريس</div>
@@ -181,7 +181,15 @@ const $=s=>document.querySelector(s),au=$('#au'),mus=$('#mus');
 for(let i=0;i<14;i++){const f=document.createElement('i');f.className='fall';f.style.cssText=`left:${Math.random()*100}%;animation-duration:${6+Math.random()*7}s;animation-delay:${-Math.random()*9}s;width:${6+Math.random()*7}px;height:${6+Math.random()*7}px`;$('#cover').append(f)}
 /* open + music */
 function setMus(on){mus.classList.toggle('on',on);mus.classList.toggle('off',!on);on?au.play().catch(()=>{}):au.pause()}
-$('#open').onclick=()=>{$('#cover').classList.add('gone');setMus(true);scrollTo(0,0)};
+$('#open').onclick=()=>{$('#cover').classList.add('gone');setMus(true);scrollTo(0,0);setTimeout(autoScroll,2500)};
+/* تمرير تلقائي بطيء بعد الفتح، ويتوقف فور لمس الزائر للشاشة */
+let auto=false;
+function autoScroll(){if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+ const de=document.documentElement,SPEED=45;let y=scrollY,last=performance.now();auto=true;de.style.scrollBehavior='auto';
+ const stop=()=>{auto=false;de.style.scrollBehavior='';['touchstart','wheel','mousedown','keydown'].forEach(e=>removeEventListener(e,stop))};
+ ['touchstart','wheel','mousedown','keydown'].forEach(e=>addEventListener(e,stop,{passive:true}));
+ (function step(t){if(!auto)return;y+=(t-last)/1000*SPEED;last=t;scrollTo(0,y);
+  if(innerHeight+scrollY>=de.scrollHeight-2){stop();return}requestAnimationFrame(step)})(last)}
 mus.onclick=()=>setMus(au.paused);
 /* gallery coverflow */
 const imgs=[...document.querySelectorAll('#cf img')],dots=$('#dots');let cur=0,timer;
